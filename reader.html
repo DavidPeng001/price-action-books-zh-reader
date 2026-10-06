@@ -97,49 +97,59 @@
       <!-- Main -->
       <div class="flex min-w-0 flex-1 flex-col">
         <!-- Top bar -->
-        <header
-          class="flex shrink-0 items-center gap-2 border-b border-slate-200 bg-white px-3 py-2 sm:px-4"
-        >
-          <button
-            id="sidebar-open"
-            type="button"
-            class="rounded-md p-2 text-slate-600 hover:bg-slate-100 lg:hidden"
-            aria-label="打开目录"
-          >
-            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
+        <header class="reader-header shrink-0 border-b border-slate-200 bg-white px-3 py-2 sm:px-4">
+          <div class="reader-heading">
+            <button
+              id="sidebar-open"
+              type="button"
+              class="rounded-md p-2 text-slate-600 hover:bg-slate-100 lg:hidden"
+              aria-label="打开目录"
+            >
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
 
-          <div class="min-w-0 flex-1">
-            <div id="crumb" class="truncate text-xs text-slate-500"></div>
-            <div id="chapter-title" class="truncate text-sm font-semibold text-slate-900">
-              加载中…
+            <div class="min-w-0 flex-1">
+              <div id="crumb" class="truncate text-xs text-slate-500"></div>
+              <div id="chapter-title" class="truncate text-sm font-semibold text-slate-900">加载中…</div>
+            </div>
+
+            <div class="reader-top-nav items-center gap-1">
+              <a id="nav-prev" class="rounded-md border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50" hidden>上一章</a>
+              <a id="nav-next" class="rounded-md bg-blue-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-blue-700" hidden>下一章</a>
             </div>
           </div>
 
-          <!-- Optional English toggle -->
-          <label
-            class="flex cursor-pointer select-none items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 hover:border-slate-300"
-            title="默认仅中文；打开后显示英文对照"
-          >
-            <input id="toggle-en" type="checkbox" class="h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
-            <span>英文对照</span>
-          </label>
+          <div class="reader-control-strip">
+            <div class="reader-tools" role="toolbar" aria-label="阅读工具">
+              <button id="open-search" class="tool-button" type="button" title="搜索中英文全文" aria-label="搜索中英文全文">
+                <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.3"></circle><path d="m16 16 4.3 4.3"></path></svg></span><span class="tool-label">搜索</span>
+              </button>
+              <button id="open-bookmarks" class="tool-button" type="button" title="书签" aria-label="书签">
+                <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 4.8A1.8 1.8 0 0 1 7.8 3h8.4A1.8 1.8 0 0 1 18 4.8V21l-6-3.8L6 21z"></path></svg></span><span class="tool-label">书签</span>
+              </button>
+              <button id="open-notes" class="tool-button" type="button" title="笔记" aria-label="笔记">
+                <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 3.8h10l4 4V20a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"></path><path d="M14.5 4v4.5H19M8 13h8M8 16.5h8"></path></svg></span><span class="tool-label">笔记</span>
+              </button>
+              <button id="open-highlights" class="tool-button" type="button" title="高亮" aria-label="高亮">
+                <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m4 16 9.5-9.5 4 4L8 20H4zM12 8l4 4M4 21h16"></path></svg></span><span class="tool-label">高亮</span>
+              </button>
+              <button id="open-study" class="tool-button" type="button" title="本章整理" aria-label="本章整理">
+                <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3.5 5.5c3.2-1.4 6.1-1.2 8.5.6v14c-2.4-1.8-5.3-2-8.5-.6zM20.5 5.5c-3.2-1.4-6.1-1.2-8.5.6v14c2.4-1.8 5.3-2 8.5-.6z"></path></svg></span><span class="tool-label">本章整理</span>
+              </button>
+              <button id="toggle-content-width" class="tool-button stateful-tool" type="button" aria-pressed="false" title="切换正文宽度" aria-label="切换正文宽度">
+                <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="1.5"></rect><path d="M7 8h10M7 11h10M7 14h10M7 17h7"></path></svg></span><span class="tool-label">正文宽度</span>
+              </button>
+              <button id="toggle-glossary-links" class="tool-button stateful-tool" type="button" aria-pressed="true" title="关闭术语弹窗链接" aria-label="关闭术语弹窗链接">
+                <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 13.5 8.5 15a4 4 0 0 1-5.7-5.7l3-3a4 4 0 0 1 5.7 0"></path><path d="m14 10.5 1.5-1.5a4 4 0 0 1 5.7 5.7l-3 3a4 4 0 0 1-5.7 0M8.5 12h7"></path></svg></span><span class="tool-label">术语链接</span>
+              </button>
+            </div>
 
-          <div class="hidden items-center gap-1 sm:flex">
-            <a
-              id="nav-prev"
-              class="rounded-md border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
-              hidden
-              >上一章</a
-            >
-            <a
-              id="nav-next"
-              class="rounded-md bg-blue-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-blue-700"
-              hidden
-              >下一章</a
-            >
+            <label class="english-toggle" title="默认仅中文；打开后显示英文对照">
+              <input id="toggle-en" type="checkbox" aria-label="英文对照" class="h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+              <span>英文对照</span>
+            </label>
           </div>
         </header>
 
@@ -161,7 +171,7 @@
               </article>
               <!-- EN optional -->
               <article id="en-panel" class="hidden min-w-0 border-t border-slate-200 pt-8 lg:border-t-0 lg:border-l lg:pl-8 lg:pt-0">
-                <div class="mb-4 text-xs font-semibold uppercase tracking-wider text-blue-600">
+                <div id="en-label" class="mb-4 text-xs font-semibold uppercase tracking-wider text-blue-600">
                   English
                 </div>
                 <div id="md-en" class="prose-gitbook md-body text-[0.95rem] text-slate-700">
@@ -195,6 +205,90 @@
         </div>
       </div>
     </div>
+
+    <dialog id="search-dialog" class="reader-dialog">
+      <div class="dialog-header">
+        <div>
+          <h2>全文搜索</h2>
+          <p>搜索本书中文与英文标题、正文</p>
+        </div>
+        <button class="dialog-close" type="button" data-close-dialog="search-dialog" aria-label="关闭">×</button>
+      </div>
+      <label class="sr-only" for="search-input">搜索关键词</label>
+      <input id="search-input" class="search-input" type="search" placeholder="输入词语或短句…" autocomplete="off" />
+      <div id="search-status" class="dialog-status" aria-live="polite"></div>
+      <div id="search-results" class="dialog-results"></div>
+    </dialog>
+
+    <dialog id="bookmarks-dialog" class="reader-dialog">
+      <div class="dialog-header">
+        <div>
+          <h2>书签与阅读进度</h2>
+          <p id="progress-status">本地保存于当前浏览器</p>
+        </div>
+        <button class="dialog-close" type="button" data-close-dialog="bookmarks-dialog" aria-label="关闭">×</button>
+      </div>
+      <div class="bookmark-actions">
+        <button id="save-bookmark" class="primary-button" type="button">收藏当前位置</button>
+        <button id="resume-progress" class="tool-button" type="button">继续上次阅读</button>
+      </div>
+      <div id="bookmark-list" class="dialog-results"></div>
+    </dialog>
+
+    <dialog id="notes-dialog" class="reader-dialog">
+      <div class="dialog-header">
+        <div>
+          <h2>本章笔记</h2>
+          <p id="notes-status">按章节保存在当前浏览器</p>
+        </div>
+        <button class="dialog-close" type="button" data-close-dialog="notes-dialog" aria-label="关闭">×</button>
+      </div>
+      <label class="sr-only" for="chapter-notes">本章笔记</label>
+      <textarea id="chapter-notes" class="notes-input" placeholder="记录本章要点、疑问或自己的理解…"></textarea>
+      <div class="notes-footer">
+        <span>仅保存在当前浏览器</span>
+        <button id="save-notes" class="primary-button" type="button">保存笔记</button>
+      </div>
+    </dialog>
+
+    <dialog id="highlights-dialog" class="reader-dialog">
+      <div class="dialog-header">
+        <div>
+          <h2>本章高亮</h2>
+          <p>高亮仅保存在当前浏览器</p>
+        </div>
+        <button class="dialog-close" type="button" data-close-dialog="highlights-dialog" aria-label="关闭">×</button>
+      </div>
+      <div id="highlight-list" class="dialog-results"></div>
+    </dialog>
+
+    <dialog id="study-dialog" class="reader-dialog study-dialog">
+      <div class="dialog-header">
+        <div>
+          <h2>本章整理</h2>
+          <p id="study-subtitle">离线生成的章节摘要与导图</p>
+        </div>
+        <button class="dialog-close" type="button" data-close-dialog="study-dialog" aria-label="关闭">×</button>
+      </div>
+      <div id="study-content" class="study-content"></div>
+    </dialog>
+
+    <dialog id="glossary-dialog" class="reader-dialog glossary-dialog">
+      <div class="dialog-header">
+        <div>
+          <h2 id="glossary-title">术语解释</h2>
+          <p>来自本书术语表</p>
+        </div>
+        <button class="dialog-close" type="button" data-close-dialog="glossary-dialog" aria-label="关闭">×</button>
+      </div>
+      <div id="glossary-content"></div>
+    </dialog>
+
+    <div id="highlight-toolbar" class="highlight-toolbar" role="toolbar" aria-label="选中文本操作" hidden>
+      <span>选中一段文字</span>
+      <button id="create-highlight" class="primary-button" type="button">高亮</button>
+    </div>
+    <div id="reader-toast" class="reader-toast" role="status" aria-live="polite" hidden></div>
 
     <script src="js/app.js"></script>
   </body>

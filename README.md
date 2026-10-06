@@ -2,6 +2,8 @@
 
 Al Brooks 价格行为系列图书的**简体中文**开源翻译仓库，支持：
 
+本仓库基于 [lihongjie0209/price-action-books-zh](https://github.com/lihongjie0209/price-action-books-zh) Fork，并在此基础上维护阅读站点与阅读增强功能。
+
 - 按书分目录管理（可继续添加 Reversals、Trading Ranges 等）
 - 统一**术语表**与**二次审计**流程（见下方 Skill）
 - **GitHub Pages 中英对照阅读**
@@ -10,13 +12,28 @@ Al Brooks 价格行为系列图书的**简体中文**开源翻译仓库，支持
 
 - GitBook 风格：左侧**分层目录**（前言 / 各部分 / 附录）
 - **默认中文**；右上角可按需开启「英文对照」
-- Tailwind CSS 构建 UI
+- 阅读页支持中英章节实时对照、全文搜索、逐章笔记、书签、阅读进度和持久化高亮
+- 章节整理以离线 JSON 提供摘要、要点和可折叠导图；缺少整理文件时显示生成占位提示
+
+## 阅读增强功能
+
+阅读页工具栏提供以下功能，个人数据保存在当前浏览器的 `localStorage` 中：
+
+- **中英实时对照**：根据章节标题与相邻段落在页面运行时匹配，不改写英文或中文 Markdown 原文。
+- **全文搜索**：搜索本书中文与英文分章内容，并可跳转到匹配章节。
+- **书签与进度**：保存章节阅读位置、查看书签，并从上次阅读位置继续。
+- **逐章笔记**：每章单独记录笔记并自动保存，可随时继续编辑。
+- **持久化高亮**：选择单个段落中的文本并保存为高亮；高亮可在刷新后恢复，也可在高亮面板管理。
+- **术语解释**：阅读中自动识别术语表里的中英文词条，点击带下划线的词即可弹窗查看译名与备注。
+- **本章整理**：显示离线摘要、核心要点和可折叠章节导图；此静态站点不调用在线 AI。
+
+章节整理规范、整理提示词、JSON 结构以及文件组织约定见 [章节整理 Skill](.grok/skills/chapter-study-guide/SKILL.md)。目前第 1、2 章附有示例整理文件，其他章节会显示占位提示。整理文件位于 `books/<book-id>/study-guides/zh/<chapter-id>.json`。
 
 ## 在线阅读
 
 部署后地址（启用 Pages 后）：
 
-**https://lihongjie0209.github.io/price-action-books-zh/**
+**https://davidpeng001.github.io/price-action-books-zh-reader/**
 
 本地预览：
 
@@ -37,10 +54,13 @@ price-action-books-zh/
 │       ├── en/chapters/               # 英文 Markdown（按章）
 │       ├── zh/chapters/               # 中文译本
 │       ├── glossary/glossary.md       # 术语表
+│       ├── study-guides/zh/           # 离线章节摘要与导图 JSON
 │       ├── assets/figures/            # 共享图（fig_*.png）
 │       ├── notes/                     # 抽取/审计记录
 │       └── scripts/                   # 可选工具脚本
-└── .grok/skills/book-translation/     # 图书翻译 Skill
+└── .grok/skills/
+    ├── book-translation/              # 图书翻译 Skill
+    └── chapter-study-guide/           # 章节整理 Skill 与 Agent 提示词
 ```
 
 ## 当前书目
