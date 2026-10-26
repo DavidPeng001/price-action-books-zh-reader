@@ -81,6 +81,94 @@
     return value.normalize("NFKC").toLocaleLowerCase().replace(/[^a-z0-9\u3400-\u9fff]/g, "");
   }
 
+  function titleVariants(value) {
+    const title = value.trim().replace(/^#{1,6}\s*/, "");
+    const withoutChapterNumber = title
+      .replace(/^第\s*[0-9一二三四五六七八九十百]+\s*章\s*/i, "")
+      .replace(/^chapter\s+[0-9]+\s*[:.\-–—]?\s*/i, "");
+    // Short headings such as “Failures” can be ordinary prose at a page start.
+    return [...new Set([title, withoutChapterNumber].map(normalizedTitle).filter((item) => item.length >= 12))];
+  }
+
+  function matchingTitlePrefixEnd(text, normalized) {
+    let matched = 0;
+    for (let index = 0; index < text.length;) {
+      const point = text.codePointAt(index);
+      const char = String.fromCodePoint(point);
+      const key = normalizedTitle(char);
+      index += char.length;
+      if (!key) continue;
+      if (!normalized.startsWith(key, matched)) return -1;
+      matched += key.length;
+      if (matched === normalized.length) return index;
+    }
+    return -1;
+  }
+
+  function stripRepeatedPrintedTitles(md, pageMeta, lang) {
+    const marker = /<!--\s*PDF page \d+\s*-->/gi;
+    const matches = [...md.matchAll(marker)];
+    if (matches.length < 2) return md;
+
+    const headings = [...md.slice(0, matches[0].index).matchAll(/^#{1,6}\s+(.+)$/gm)]
+      .map((match) => match[1]);
+    const metadataTitle = pageMeta?.[lang === "en" ? "title_en" : "title_zh"];
+    const candidates = [...new Set([metadataTitle, ...headings].filter(Boolean)
+      .flatMap(titleVariants))];
+    if (!candidates.length) return md;
+
+    const pages = matches.map((match, index) => {
+      const start = match.index + match[0].length;
+      const end = matches[index + 1]?.index ?? md.length;
+      const text = md.slice(start, end);
+      // Printed running titles can follow a figure/caption, so inspect a few
+      // opening blocks. Staying near the page boundary avoids body references.
+      const lines = text.split("\n");
+      let chars = 0;
+      const leadingLines = [];
+      for (let lineIndex = 0; lineIndex < lines.length && leadingLines.length < 10 && chars < 1800; lineIndex++) {
+        const line = lines[lineIndex];
+        chars += line.length + 1;
+        if (line.trim()) leadingLines.push({ line, lineIndex });
+      }
+      return { start, end, text, lines, leadingLines };
+    });
+
+    const occurrences = new Map(candidates.map((candidate) => [candidate, 0]));
+    for (const page of pages) {
+      for (const candidate of candidates) {
+        if (page.leadingLines.some(({ line }) => matchingTitlePrefixEnd(line.trimStart(), candidate) >= 0)) {
+          occurrences.set(candidate, occurrences.get(candidate) + 1);
+        }
+      }
+    }
+    const repeated = new Set([...occurrences].filter(([, count]) => count >= 2).map(([title]) => title));
+    if (!repeated.size) return md;
+
+    const edits = [];
+    for (const page of pages) {
+      for (const { line, lineIndex } of page.leadingLines) {
+        const leadingWhitespace = line.match(/^\s*/)?.[0].length || 0;
+        const content = line.slice(leadingWhitespace);
+        const candidate = [...repeated].sort((a, b) => b.length - a.length)
+          .find((title) => matchingTitlePrefixEnd(content, title) >= 0);
+        if (!candidate) continue;
+        const titleEnd = matchingTitlePrefixEnd(content, candidate);
+        const remainder = content.slice(titleEnd);
+        let offset = 0;
+        for (let i = 0; i < lineIndex; i++) offset += page.lines[i].length + 1;
+        const start = page.start + offset + leadingWhitespace;
+        // Remove the title text only. Any prose, figure label, or image syntax
+        // sharing the line remains in place.
+        edits.push([start, start + (remainder.trim() ? titleEnd : content.length)]);
+      }
+    }
+    for (const [start, end] of edits.sort((a, b) => b[0] - a[0])) {
+      md = md.slice(0, start) + md.slice(end);
+    }
+    return md;
+  }
+
   function stripPrintedOpeningTitle(md) {
     const heading = md.match(/^#{1,6}\s+(.+)$/m);
     const marker = /<!--\s*PDF page \d+\s*-->/i.exec(md);
@@ -171,8 +259,8 @@
     return null;
   }
 
-  function renderMarkdown(md, bookPath) {
-    const cleaned = stripRepeatedPageLabels(stripPrintedOpeningTitle(md));
+  function renderMarkdown(md, bookPath, pageMeta, lang) {
+    const cleaned = stripRepeatedPageLabels(stripRepeatedPrintedTitles(stripPrintedOpeningTitle(md), pageMeta, lang));
     const fixed = rewriteMdAssets(cleaned, bookPath);
     // Keep source PDF page boundaries available to the live bilingual matcher.
     // This only changes rendered DOM; the source Markdown remains untouched.
@@ -1058,7 +1146,7 @@
     zhEl.innerHTML = `<p class="text-slate-500">加载中…</p>`;
     try {
       const zhMd = await fetchText(`${base}/zh/chapters/${file}`);
-      zhEl.innerHTML = renderMarkdown(zhMd, base);
+      zhEl.innerHTML = renderMarkdown(zhMd, base, page, "zh");
       restoreHighlights(zhEl, book.id, chapterId, "zh");
       if (state.glossaryLinks && !isContentsPage(chapterId)) await linkGlossaryTerms(zhEl, book);
     } catch (e) {
@@ -1092,7 +1180,8 @@
     enEl.innerHTML = `<p class="text-slate-500">加载英文…</p>`;
     try {
       const enMd = await fetchText(`${base}/en/chapters/${file}`);
-      enEl.innerHTML = renderMarkdown(enMd, base);
+      const page = findPageMeta(book, chapterId) || (book.chapters || []).find((c) => c.id === chapterId);
+      enEl.innerHTML = renderMarkdown(enMd, base, page, "en");
       state.enLoadedFor = key;
       restoreHighlights(enEl, book.id, chapterId || params().get("ch") || "", "en");
       if (state.glossaryLinks && !isContentsPage(chapterId)) await linkGlossaryTerms(enEl, book);
