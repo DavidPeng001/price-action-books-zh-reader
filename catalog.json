@@ -635,7 +635,7 @@
       "description_en": "Simplified Chinese translation of Al Brooks Trading Price Action TRADING RANGES.",
       "path": "books/trading-price-action-trading-ranges",
       "default_lang": "zh",
-      "chapter_count": 46,
+      "chapter_count": 47,
       "figure_count": 152,
       "glossary": "books/trading-price-action-trading-ranges/glossary/glossary.md",
       "toc": [
@@ -645,6 +645,13 @@
           "title_zh": "前言",
           "title_en": "Front Matter",
           "children": [
+            {
+              "type": "page",
+              "id": "00-contents",
+              "file": "00-contents.md",
+              "title_zh": "目录",
+              "title_en": "Contents"
+            },
             {
               "type": "page",
               "id": "01-acknowledgments",
@@ -1019,6 +1026,14 @@
         }
       ],
       "chapters": [
+        {
+          "id": "00-contents",
+          "file": "00-contents.md",
+          "title_en": "Contents",
+          "title_zh": "目录",
+          "en_bytes": 3172,
+          "zh_bytes": 2887
+        },
         {
           "id": "01-acknowledgments",
           "file": "01-acknowledgments.md",
@@ -1400,7 +1415,7 @@
       "description_en": "Simplified Chinese translation of Al Brooks Trading Price Action REVERSALS.",
       "path": "books/trading-price-action-reversals",
       "default_lang": "zh",
-      "chapter_count": 38,
+      "chapter_count": 39,
       "figure_count": 177,
       "glossary": "books/trading-price-action-reversals/glossary/glossary.md",
       "toc": [
@@ -1410,6 +1425,13 @@
           "title_zh": "前言",
           "title_en": "Front Matter",
           "children": [
+            {
+              "type": "page",
+              "id": "00-contents",
+              "file": "00-contents.md",
+              "title_zh": "目录",
+              "title_en": "Contents"
+            },
             {
               "type": "page",
               "id": "01-acknowledgments",
@@ -1720,6 +1742,14 @@
         }
       ],
       "chapters": [
+        {
+          "id": "00-contents",
+          "file": "00-contents.md",
+          "title_en": "Contents",
+          "title_zh": "目录",
+          "en_bytes": 2344,
+          "zh_bytes": 2176
+        },
         {
           "id": "01-acknowledgments",
           "file": "01-acknowledgments.md",
